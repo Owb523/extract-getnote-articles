@@ -52,7 +52,7 @@ if [ -d "$INSTALL_DIR" ]; then
     cd "$INSTALL_DIR"
     git pull
 else
-    git clone https://github.com/你的用户名/extract-getnote-articles.git "$INSTALL_DIR"
+    git clone https://github.com/dontbesilent2025/extract-getnote-articles.git "$INSTALL_DIR"
     cd "$INSTALL_DIR"
 fi
 

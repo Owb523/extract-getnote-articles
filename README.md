@@ -19,7 +19,7 @@
 ### 一键安装（推荐）
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/你的用户名/extract-getnote-articles/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dontbesilent2025/extract-getnote-articles/main/install.sh | bash
 ```
 
 安装脚本会询问你是要全局安装（所有项目可用）还是安装到当前项目。
@@ -29,7 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/你的用户名/extract-getnote-art
 **全局安装（所有项目可用）：**
 
 ```bash
-git clone https://github.com/你的用户名/extract-getnote-articles.git ~/.claude/skills/extract-getnote-articles
+git clone https://github.com/dontbesilent2025/extract-getnote-articles.git ~/.claude/skills/extract-getnote-articles
 cd ~/.claude/skills/extract-getnote-articles
 npm install
 ```
@@ -37,7 +37,7 @@ npm install
 **项目级安装：**
 
 ```bash
-git clone https://github.com/你的用户名/extract-getnote-articles.git ./skills/extract-getnote-articles
+git clone https://github.com/dontbesilent2025/extract-getnote-articles.git ./skills/extract-getnote-articles
 cd ./skills/extract-getnote-articles
 npm install
 ```
