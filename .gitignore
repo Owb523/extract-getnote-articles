@@ -6,17 +6,15 @@ package-lock.json
 chrome-user-data/
 
 # 提取的文章（输出文件夹）
-# 所有根目录下的文件夹，除了 skills 和 scripts
-/*
-!/.gitignore
-!/README.md
-!/开始.sh
-!/skills/
-!/scripts/
-!/.claude/
+# 排除所有文件夹，但保留必要的文件
+*.md
+!README.md
 
 # Obsidian
 .obsidian/
 
 # macOS
 .DS_Store
+
+# Claude
+.claude/

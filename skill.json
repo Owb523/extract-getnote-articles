@@ -1,0 +1,19 @@
+{
+  "name": "extract-getnote-articles",
+  "version": "2.0.0",
+  "description": "自动提取Get笔记博主的所有短视频文案。可以传入知识库URL或知识库ID。",
+  "author": "Claude",
+  "command": "node run.js",
+  "parameters": [
+    {
+      "name": "url_or_id",
+      "description": "知识库URL（如 https://www.biji.com/subject/ABC123/...）或知识库ID（如 ABC123）",
+      "required": true
+    },
+    {
+      "name": "output_dir",
+      "description": "输出目录（可选，默认使用知识库ID）",
+      "required": false
+    }
+  ]
+}

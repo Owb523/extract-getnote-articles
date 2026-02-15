@@ -1,0 +1,9 @@
+{
+  "name": "extract-getnote-articles",
+  "version": "1.0.0",
+  "description": "Get笔记文案提取工具",
+  "main": "extract.js",
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}
