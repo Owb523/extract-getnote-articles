@@ -106,14 +106,14 @@ node run.js "https://www.biji.com/subject/QYARpjM0/DEFAULT?followId=..."
 
 ```
 ~/.claude/skills/extract-getnote-articles/
-├── 董太太/              # 第一次提取
+├── 博主A/              # 第一次提取
 │   ├── 001_文章标题.md
 │   ├── 002_文章标题.md
 │   └── ...
-├── 董太太_2/            # 第二次提取（自动添加序号避免冲突）
+├── 博主A_2/            # 第二次提取（自动添加序号避免冲突）
 │   ├── 001_文章标题.md
 │   └── ...
-└── 其他博主/
+└── 博主B/
     └── ...
 ```
 
