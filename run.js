@@ -13,9 +13,38 @@ function extractTopicId(urlOrId) {
   return urlOrId;
 }
 
+// 从URL中提取followName参数
+function extractFollowName(url) {
+  try {
+    const urlObj = new URL(url);
+    const followName = urlObj.searchParams.get('followName');
+    if (followName) {
+      // URL解码
+      return decodeURIComponent(followName);
+    }
+  } catch (e) {
+    // 不是有效的URL
+  }
+  return null;
+}
+
 // 检查输入是否为完整URL
 function isFullUrl(input) {
   return input.startsWith('http://') || input.startsWith('https://');
+}
+
+// 获取不冲突的文件夹名
+function getUniqueOutputDir(baseName) {
+  let outputDir = `./${baseName}`;
+  let counter = 2;
+
+  // 如果文件夹已存在，添加序号
+  while (fs.existsSync(outputDir)) {
+    outputDir = `./${baseName}_${counter}`;
+    counter++;
+  }
+
+  return outputDir;
 }
 
 async function main() {
@@ -28,7 +57,7 @@ async function main() {
     console.log('  node run.js <URL或ID> [输出目录]');
     console.log('');
     console.log('示例：');
-    console.log('  node run.js https://www.biji.com/subject/ABC123/DEFAULT');
+    console.log('  node run.js https://www.biji.com/subject/ABC123/DEFAULT?followName=...');
     console.log('  node run.js ABC123');
     console.log('  node run.js ABC123 "自定义目录名"');
     process.exit(1);
@@ -36,14 +65,24 @@ async function main() {
 
   const urlOrId = args[0];
   const topicId = extractTopicId(urlOrId);
-  // 输出目录应该在项目根目录（skills的上两级）
-  const outputDirName = args[1] || topicId;
-  const outputDir = `../../${outputDirName}`;
+
+  // 确定输出目录名：优先使用用户指定的，其次使用followName，最后使用topicId
+  let outputDirName;
+  if (args[1]) {
+    outputDirName = args[1];
+  } else {
+    const followName = extractFollowName(urlOrId);
+    outputDirName = followName || topicId;
+  }
+
+  // 获取不冲突的输出目录
+  const outputDir = getUniqueOutputDir(outputDirName);
+  const finalDirName = path.basename(outputDir);
 
   console.log('=== Get笔记文案提取工具 ===');
   console.log(`输入: ${urlOrId}`);
   console.log(`知识库ID: ${topicId}`);
-  console.log(`输出目录: ${outputDirName}`);
+  console.log(`输出目录: ${finalDirName}`);
   console.log('');
 
   // 调用原始的 extract.js

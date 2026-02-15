@@ -55,7 +55,6 @@ function sanitizeFilename(title) {
 async function extractArticleContent(page, detailUrl) {
   try {
     const webUrl = detailUrl + '/web';
-    console.log(`      访问: ${webUrl}`);
 
     await page.goto(webUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
 
@@ -93,12 +92,128 @@ async function extractArticleContent(page, detailUrl) {
   }
 }
 
+// 串行获取文章URL（通过点击）
+async function fetchArticleUrls(page, baseUrl, articles, currentPage) {
+  const urls = [];
+
+  for (let i = 0; i < articles.length; i++) {
+    try {
+      // 返回列表页
+      await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+      await page.waitForSelector('tbody tr', { timeout: 5000 });
+      await page.waitForTimeout(1000);
+
+      // 如果不是第一页，需要翻页
+      if (currentPage > 1) {
+        const separator = baseUrl.includes('?') ? '&' : '?';
+        const pageUrl = `${baseUrl}${separator}page=${currentPage}`;
+        await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
+        await page.waitForSelector('tbody tr', { timeout: 5000 });
+        await page.waitForTimeout(1000);
+      }
+
+      // 点击第i行
+      await page.evaluate((index) => {
+        const rows = document.querySelectorAll('tbody tr');
+        if (rows[index]) {
+          const titleCell = rows[index].querySelector('td:first-child');
+          if (titleCell) {
+            titleCell.click();
+          }
+        }
+      }, i);
+
+      // 等待页面跳转
+      await page.waitForTimeout(1500);
+      const url = page.url();
+
+      urls.push({
+        ...articles[i],
+        detailUrl: url
+      });
+
+      console.log(`  [${i + 1}/${articles.length}] 获取URL: ${articles[i].title.substring(0, 30)}...`);
+    } catch (error) {
+      console.error(`  [${i + 1}/${articles.length}] 获取URL失败: ${error.message}`);
+      urls.push({
+        ...articles[i],
+        detailUrl: null
+      });
+    }
+  }
+
+  return urls;
+}
+
+// 并行处理单篇文章
+async function processArticle(context, article, outputDir, globalIndex, startTime, totalSavedRef) {
+  const filename = `${String(globalIndex).padStart(3, '0')}_${sanitizeFilename(article.title)}.md`;
+  const filepath = path.join(outputDir, filename);
+
+  // 检查文件是否已存在（断点续传）
+  if (fs.existsSync(filepath)) {
+    console.log(`  [${globalIndex}] ⏭️  ${article.title.substring(0, 40)}... - 已存在，跳过`);
+    return { skipped: true, saved: false };
+  }
+
+  // 检查是否有有效的URL
+  if (!article.detailUrl) {
+    console.log(`  [${globalIndex}] ✗ ${article.title.substring(0, 40)}... - 无有效URL`);
+    return { skipped: false, saved: false };
+  }
+
+  try {
+    console.log(`  [${globalIndex}] 🔄 ${article.title.substring(0, 40)}...`);
+
+    // 为每个文章创建独立的页面
+    const page = await context.newPage();
+
+    try {
+      const content = await extractArticleContent(page, article.detailUrl);
+
+      if (content && content.mainContent) {
+        const markdown = `# ${article.title}
+
+**原链接**: ${content.originalLink || ''}
+
+---
+
+${content.mainContent}
+`;
+
+        fs.writeFileSync(filepath, markdown, 'utf-8');
+        totalSavedRef.count++;
+
+        // 计算并显示实时统计
+        const elapsedMinutes = (Date.now() - startTime) / 1000 / 60;
+        const avgSpeed = totalSavedRef.count / elapsedMinutes;
+        console.log(`  [${globalIndex}] ✓ ${article.title.substring(0, 40)}... - 已保存 (${avgSpeed.toFixed(1)} 篇/分钟)`);
+
+        await page.close();
+        return { skipped: false, saved: true };
+      } else {
+        console.log(`  [${globalIndex}] ✗ ${article.title.substring(0, 40)}... - 内容为空`);
+        await page.close();
+        return { skipped: false, saved: false };
+      }
+    } catch (error) {
+      console.error(`  [${globalIndex}] ✗ ${article.title.substring(0, 40)}... - 处理失败: ${error.message}`);
+      await page.close();
+      return { skipped: false, saved: false };
+    }
+  } catch (error) {
+    console.error(`  [${globalIndex}] ✗ ${article.title.substring(0, 40)}... - 创建页面失败: ${error.message}`);
+    return { skipped: false, saved: false };
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const urlOrId = args[0] || 'oJOKRwOJ';
   const outputDir = args[1] || '于生文案_完整版';
   const maxPages = parseInt(args[2] || '0');
-  const maxArticles = parseInt(args[3] || '0'); // 新增：最大文章数
+  const maxArticles = parseInt(args[3] || '0');
+  const concurrency = parseInt(args[4] || '3'); // 并发数，默认3
 
   // 判断是完整URL还是只是ID
   let baseUrl;
@@ -121,6 +236,7 @@ async function main() {
   console.log(`输出目录: ${outputDir}`);
   console.log(`最大页数: ${maxPages === 0 ? '全部' : maxPages}`);
   console.log(`最大文章数: ${maxArticles === 0 ? '全部' : maxArticles}`);
+  console.log(`并发数: ${concurrency}`);
   console.log('');
 
   if (!fs.existsSync(outputDir)) {
@@ -136,13 +252,35 @@ async function main() {
   const context = await chromium.launchPersistentContext(userDataDir, {
     headless: false,
     channel: 'chrome',
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-features=FocusOnLoad',
+      '--disable-popup-blocking',
+      '--disable-background-timer-throttling',
+      '--window-position=0,0',  // 固定位置
+      '--window-size=800,600'   // 较小窗口
+    ],
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
   });
 
   const page = await context.newPage();
 
-  let totalSaved = 0;
+  // 优雅停止处理
+  let shouldStop = false;
+  const gracefulShutdown = async () => {
+    if (shouldStop) return; // 防止重复调用
+    shouldStop = true;
+    console.log('\n\n⚠️  收到停止信号，正在优雅退出...');
+    console.log('等待当前批次处理完成...');
+  };
+
+  process.on('SIGINT', gracefulShutdown);
+  process.on('SIGTERM', gracefulShutdown);
+
+  // 使用对象引用来跟踪计数（用于并行处理）
+  const totalSavedRef = { count: 0 };
+  let totalSkipped = 0;
   let currentPage = 1;
 
   while (maxPages === 0 || currentPage <= maxPages) {
@@ -259,18 +397,13 @@ async function main() {
         }
       }
 
-      // 一次性提取所有文章信息（标题和链接）
+      // 一次性提取所有文章信息（标题）
       const articles = await page.evaluate(() => {
         const rows = document.querySelectorAll('tbody tr');
         return Array.from(rows).map((row, index) => {
           const titleCell = row.querySelector('td:first-child');
           const title = titleCell ? titleCell.textContent.trim() : null;
-
-          // 尝试提取链接
-          const link = titleCell ? titleCell.querySelector('a') : null;
-          const href = link ? link.getAttribute('href') : null;
-
-          return { title, href, index };
+          return { title, index };
         }).filter(item => item.title);
       });
 
@@ -287,85 +420,45 @@ async function main() {
         break;
       }
 
-      // 处理每篇文章
-      for (let i = 0; i < articles.length; i++) {
+      // 步骤1：串行获取所有文章的URL
+      console.log('\n📋 步骤1: 获取文章URL...');
+      const articlesWithUrls = await fetchArticleUrls(page, pageUrl, articles, currentPage);
+
+      // 步骤2：并行提取文章内容（分批处理）
+      console.log('\n📝 步骤2: 并行提取内容...');
+      for (let i = 0; i < articlesWithUrls.length; i += concurrency) {
+        // 检查是否收到停止信号
+        if (shouldStop) {
+          console.log('\n⏸️  停止提取，保存进度...');
+          break;
+        }
+
         // 检查是否达到最大文章数
-        if (maxArticles > 0 && totalSaved >= maxArticles) {
+        if (maxArticles > 0 && totalSavedRef.count >= maxArticles) {
           console.log(`\n已达到最大文章数限制 (${maxArticles})，停止提取`);
-          await context.close();
-          console.log('\n=== 完成 ===');
-          console.log(`总共保存: ${totalSaved} 篇文案`);
-          console.log(`输出目录: ${outputDir}`);
-          return;
+          break;
         }
 
-        const article = articles[i];
+        // 获取当前批次的文章
+        const batch = articlesWithUrls.slice(i, Math.min(i + concurrency, articlesWithUrls.length));
 
-        try {
-          console.log(`  [${i + 1}/${articles.length}] ${article.title}`);
+        // 并行处理当前批次
+        const promises = batch.map((article, batchIndex) => {
+          const globalIndex = (currentPage - 1) * 20 + i + batchIndex + 1;
+          return processArticle(context, article, outputDir, globalIndex, startTime, totalSavedRef);
+        });
 
-          let detailUrl;
+        const results = await Promise.all(promises);
 
-          // 如果有直接链接，使用链接；否则通过点击获取
-          if (article.href && article.href.startsWith('/note/')) {
-            detailUrl = `https://www.biji.com${article.href}`;
-            console.log(`      使用直接链接`);
-          } else {
-            // 需要点击获取URL
-            await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 20000 });
-            await page.waitForSelector('tbody tr', { timeout: 5000 });
+        // 统计结果
+        results.forEach(result => {
+          if (result.skipped) totalSkipped++;
+        });
+      }
 
-            if (currentPage > 1) {
-              await page.evaluate((pageNum) => {
-                const pageButtons = Array.from(document.querySelectorAll('div[cursor=pointer]'));
-                const targetButton = pageButtons.find(btn => btn.textContent.trim() === String(pageNum));
-                if (targetButton) targetButton.click();
-              }, currentPage);
-              await page.waitForTimeout(1000);
-            }
-
-            await page.evaluate((index) => {
-              const rows = document.querySelectorAll('tbody tr');
-              if (rows[index]) {
-                rows[index].querySelector('td:first-child').click();
-              }
-            }, article.index);
-
-            await page.waitForTimeout(1500);
-            detailUrl = page.url();
-          }
-
-          const content = await extractArticleContent(page, detailUrl);
-
-          if (content && content.mainContent) {
-            const globalIndex = (currentPage - 1) * 20 + i + 1;
-            const filename = `${String(globalIndex).padStart(3, '0')}_${sanitizeFilename(article.title)}.md`;
-            const filepath = path.join(outputDir, filename);
-
-            const markdown = `# ${article.title}
-
-**原链接**: ${content.originalLink || ''}
-
----
-
-${content.mainContent}
-`;
-
-            fs.writeFileSync(filepath, markdown, 'utf-8');
-            totalSaved++;
-
-            // 计算并显示实时统计
-            const elapsedMinutes = (Date.now() - startTime) / 1000 / 60;
-            const avgSpeed = totalSaved / elapsedMinutes;
-            console.log(`      ✓ 已保存`);
-            console.log(`      📊 进度统计: 已提取 ${totalSaved} 篇 | 平均速度: ${avgSpeed.toFixed(1)} 篇/分钟 | 用时: ${elapsedMinutes.toFixed(1)} 分钟`);
-          } else {
-            console.log(`      ✗ 内容为空`);
-          }
-
-        } catch (error) {
-          console.error(`  [${i + 1}/${articles.length}] ✗ 处理失败: ${error.message}`);
-        }
+      // 检查是否收到停止信号
+      if (shouldStop) {
+        break;
       }
 
       currentPage++;
@@ -380,10 +473,13 @@ ${content.mainContent}
 
   // 计算最终统计
   const totalMinutes = (Date.now() - startTime) / 1000 / 60;
-  const finalSpeed = totalSaved / totalMinutes;
+  const finalSpeed = totalSavedRef.count / totalMinutes;
 
   console.log('\n=== 完成 ===');
-  console.log(`总共保存: ${totalSaved} 篇文案`);
+  console.log(`总共保存: ${totalSavedRef.count} 篇文案`);
+  if (totalSkipped > 0) {
+    console.log(`跳过已存在: ${totalSkipped} 篇`);
+  }
   console.log(`总用时: ${totalMinutes.toFixed(1)} 分钟`);
   console.log(`平均速度: ${finalSpeed.toFixed(1)} 篇/分钟`);
   console.log(`输出目录: ${outputDir}`);
