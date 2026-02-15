@@ -1,0 +1,22 @@
+# 依赖
+node_modules/
+package-lock.json
+
+# 浏览器数据
+chrome-user-data/
+
+# 提取的文章（输出文件夹）
+# 所有根目录下的文件夹，除了 skills 和 scripts
+/*
+!/.gitignore
+!/README.md
+!/开始.sh
+!/skills/
+!/scripts/
+!/.claude/
+
+# Obsidian
+.obsidian/
+
+# macOS
+.DS_Store
